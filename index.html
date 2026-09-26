@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskFlow - A sleek, powerful, and intuitive task and productivity manager built with vanilla HTML, CSS, and JavaScript.">
+  <meta name="keywords" content="todo app, task manager, productivity, vanilla js, modern todo">
+  <title>TaskFlow — Premium Task & Productivity Suite</title>
+  
+  <!-- Modern Typography from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="glow-bg glow-1" aria-hidden="true"></div>
+  <div class="glow-bg glow-2" aria-hidden="true"></div>
+  <div class="glow-bg glow-3" aria-hidden="true"></div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app-wrapper">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-title">TaskFlow<span class="brand-badge">PRO</span></h1>
+          <p class="brand-subtitle" id="greeting-text">Organize, focus, and accomplish.</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="date-chip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span id="current-date-display">Today</span>
+        </div>
+
+        <button id="theme-toggle" class="icon-btn" title="Toggle Light/Dark Theme" aria-label="Toggle theme">
+          <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Productivity Dashboard -->
+    <section class="dashboard-section" aria-label="Productivity Overview">
+      <div class="progress-card">
+        <div class="progress-circle-wrapper">
+          <svg class="progress-ring" width="100" height="100" viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#6366f1" />
+                <stop offset="50%" stop-color="#8b5cf6" />
+                <stop offset="100%" stop-color="#ec4899" />
+              </linearGradient>
+            </defs>
+            <circle class="progress-ring-bg" cx="50" cy="50" r="40" stroke-width="8"></circle>
+            <circle class="progress-ring-fill" id="progress-circle" cx="50" cy="50" r="40" stroke-width="8"></circle>
+          </svg>
+          <div class="progress-percent" id="progress-percent-text">0%</div>
+        </div>
+        <div class="progress-info">
+          <h2 class="progress-title" id="progress-status-headline">Productivity Pulse</h2>
+          <p class="progress-desc" id="progress-status-sub">Add tasks to kickstart your day.</p>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="linear-progress-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card" data-filter="all">
+          <div class="stat-icon total">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+          </div>
+          <div class="stat-meta">
+            <span class="stat-num" id="stat-total">0</span>
+            <span class="stat-label">Total Tasks</span>
+          </div>
+        </div>
+
+        <div class="stat-card" data-filter="active">
+          <div class="stat-icon pending">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <div class="stat-meta">
+            <span class="stat-num" id="stat-active">0</span>
+            <span class="stat-label">In Progress</span>
+          </div>
+        </div>
+
+        <div class="stat-card" data-filter="completed">
+          <div class="stat-icon completed">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <div class="stat-meta">
+            <span class="stat-num" id="stat-completed">0</span>
+            <span class="stat-label">Completed</span>
+          </div>
+        </div>
+
+        <div class="stat-card" data-filter="starred">
+          <div class="stat-icon starred">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+          <div class="stat-meta">
+            <span class="stat-num" id="stat-starred">0</span>
+            <span class="stat-label">Starred</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Task Creation Form -->
+    <section class="create-task-section">
+      <form id="task-form" class="task-form" autocomplete="off">
+        <div class="form-main-row">
+          <div class="input-with-icon">
+            <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            <input 
+              type="text" 
+              id="task-title-input" 
+              class="task-input" 
+              placeholder="What needs to get done? (Press Enter to add)" 
+              required
+              maxlength="150"
+            >
+          </div>
+
+          <button type="submit" id="btn-add-task" class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add Task</span>
+          </button>
+        </div>
+
+        <!-- Collapsible / Expanded Options -->
+        <div class="form-details-row" id="form-details">
+          <div class="detail-group">
+            <label for="task-category-select" class="detail-label">Category</label>
+            <div class="select-wrapper">
+              <select id="task-category-select" class="styled-select">
+                <option value="Work">💼 Work</option>
+                <option value="Personal" selected>👤 Personal</option>
+                <option value="Study">📚 Study</option>
+                <option value="Health">🏃 Health</option>
+                <option value="Finance">💳 Finance</option>
+                <option value="Creative">🎨 Creative</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="detail-group">
+            <label for="task-priority-select" class="detail-label">Priority</label>
+            <div class="select-wrapper">
+              <select id="task-priority-select" class="styled-select">
+                <option value="low">🟢 Low</option>
+                <option value="medium" selected>🟡 Medium</option>
+                <option value="high">🔴 High</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="detail-group">
+            <label for="task-due-date" class="detail-label">Due Date</label>
+            <input type="date" id="task-due-date" class="styled-date-input">
+          </div>
+
+          <div class="detail-group full-width">
+            <input 
+              type="text" 
+              id="task-notes-input" 
+              class="notes-input" 
+              placeholder="Optional notes or details..."
+              maxlength="300"
+            >
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Controls Bar: Search, Filters, Sorting -->
+    <section class="controls-section">
+      <div class="search-filter-bar">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="text" 
+            id="search-input" 
+            class="search-input" 
+            placeholder="Search tasks... (Press / to focus)"
+            aria-label="Search tasks"
+          >
+          <button id="search-clear" class="search-clear-btn" aria-label="Clear search" hidden>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          <kbd class="shortcut-kbd">/</kbd>
+        </div>
+
+        <div class="sort-wrapper">
+          <label for="sort-select" class="sort-label">Sort:</label>
+          <select id="sort-select" class="styled-select sort-select">
+            <option value="date-desc">Newest First</option>
+            <option value="date-asc">Oldest First</option>
+            <option value="due-asc">Due Date (Soonest)</option>
+            <option value="priority-desc">Priority (High to Low)</option>
+            <option value="alpha-asc">Alphabetical (A-Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Filter Tabs & Category Chips -->
+      <div class="tabs-and-categories">
+        <nav class="filter-tabs" role="tablist" aria-label="Task Status Filters">
+          <button class="filter-tab active" data-tab="all" role="tab" aria-selected="true">
+            All <span class="tab-count" id="count-all">0</span>
+          </button>
+          <button class="filter-tab" data-tab="active" role="tab" aria-selected="false">
+            Active <span class="tab-count" id="count-active">0</span>
+          </button>
+          <button class="filter-tab" data-tab="completed" role="tab" aria-selected="false">
+            Done <span class="tab-count" id="count-completed">0</span>
+          </button>
+          <button class="filter-tab" data-tab="starred" role="tab" aria-selected="false">
+            Starred <span class="tab-count" id="count-starred">0</span>
+          </button>
+        </nav>
+
+        <div class="category-chips-scroll" id="category-chips-bar">
+          <button class="chip active" data-category="all">All Categories</button>
+          <button class="chip" data-category="Work">💼 Work</button>
+          <button class="chip" data-category="Personal">👤 Personal</button>
+          <button class="chip" data-category="Study">📚 Study</button>
+          <button class="chip" data-category="Health">🏃 Health</button>
+          <button class="chip" data-category="Finance">💳 Finance</button>
+          <button class="chip" data-category="Creative">🎨 Creative</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Task List Container -->
+    <main class="task-list-section">
+      <div class="list-header">
+        <h3 class="list-heading" id="current-view-title">All Tasks</h3>
+        <div class="list-actions">
+          <button id="btn-export" class="action-text-btn" title="Export tasks as JSON">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export
+          </button>
+          <label class="action-text-btn file-upload-btn" title="Import tasks from JSON">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Import
+            <input type="file" id="import-file-input" accept=".json" style="display:none;">
+          </label>
+          <button id="btn-clear-completed" class="action-text-btn danger-text" title="Clear all completed tasks">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Clear Done
+          </button>
+        </div>
+      </div>
+
+      <!-- Task Items List -->
+      <ul id="task-list" class="task-list" aria-live="polite">
+        <!-- Rendered dynamically by JavaScript -->
+      </ul>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state" hidden>
+        <div class="empty-illustration">
+          <svg width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <circle cx="10" cy="13" r="1"></circle>
+            <circle cx="14" cy="13" r="1"></circle>
+            <path d="M10 17h4"></path>
+          </svg>
+        </div>
+        <h4 class="empty-title" id="empty-title">All clear! No tasks found</h4>
+        <p class="empty-desc" id="empty-desc">Take a deep breath or add a new task to keep your momentum going.</p>
+        <button id="empty-action-btn" class="btn btn-secondary">Create a Task</button>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>TaskFlow &bull; Clean, private & saves locally to your browser.</p>
+    </footer>
+  </div>
+
+  <!-- Edit Task Modal -->
+  <div id="edit-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-heading" class="modal-title">Edit Task</h3>
+        <button id="modal-close-btn" class="icon-btn close-btn" aria-label="Close modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <form id="edit-form" class="modal-form">
+        <input type="hidden" id="edit-task-id">
+        
+        <div class="modal-field">
+          <label for="edit-title" class="modal-label">Task Name</label>
+          <input type="text" id="edit-title" class="task-input" required maxlength="150">
+        </div>
+
+        <div class="modal-grid-2">
+          <div class="modal-field">
+            <label for="edit-category" class="modal-label">Category</label>
+            <select id="edit-category" class="styled-select">
+              <option value="Work">💼 Work</option>
+              <option value="Personal">👤 Personal</option>
+              <option value="Study">📚 Study</option>
+              <option value="Health">🏃 Health</option>
+              <option value="Finance">💳 Finance</option>
+              <option value="Creative">🎨 Creative</option>
+            </select>
+          </div>
+
+          <div class="modal-field">
+            <label for="edit-priority" class="modal-label">Priority</label>
+            <select id="edit-priority" class="styled-select">
+              <option value="low">🟢 Low</option>
+              <option value="medium">🟡 Medium</option>
+              <option value="high">🔴 High</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <label for="edit-due-date" class="modal-label">Due Date</label>
+          <input type="date" id="edit-due-date" class="styled-date-input">
+        </div>
+
+        <div class="modal-field">
+          <label for="edit-notes" class="modal-label">Notes & Description</label>
+          <textarea id="edit-notes" class="modal-textarea" rows="3" placeholder="Add additional context or checklist details..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="modal-cancel-btn" class="btn btn-ghost">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="assertive"></div>
+
+  <!-- JavaScript -->
+  <script src="js/app.js"></script>
+</body>
+</html>
